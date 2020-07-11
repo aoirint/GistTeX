@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+
+<script>
+MathJax = {
+  startup: {
+    typeset: false,
+  },
+  tex: {
+    macros: {
+      Sin: "{\\rm Sin}",
+      Cos: "{\\rm Cos}",
+      Tan: "{\\rm Tan}",
+      Log: "{\\rm Log}",
+    }
+  }
+};
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.0.5/es5/tex-chtml.js" integrity="sha512-WIPUeuVusAT6dUtN6xKArYCBEa76ltyvaz3ltvQd+dy7ISdGJv1Y3y7eDBEF986YfNtmZGLdAaEBSgeBb+8OSg==" crossorigin="anonymous"></script>
+<script src="./script.js"></script>
+
+<script>
+  window.onload = function() {
+    const gistId = hash2value();
+    if (gistId == null) return;
+
+    getGist(gistId).then(response => {
+      const htmlUrl = response.html_url;
+      const ownerName = response.owner.login;
+      const sourceAnchor = document.querySelector('#source');
+      sourceAnchor.href = htmlUrl;
+      sourceAnchor.innerText = `${htmlUrl} by @${ownerName}`;
+
+
+      const updatedAt = response.updated_at;
+      const updatedAtDate = Date.parse(updatedAt);
+      const updatedAtTZOffsetSeconds = new Date().getTimezoneOffset() * 60000;
+      const updatedAtLocalDate = updatedAtDate - updatedAtTZOffsetSeconds;
+      const updatedAtSpan = document.querySelector('#updatedAt');
+      updatedAtSpan.innerText = new Date(updatedAtLocalDate).toISOString();
+
+
+      const filesMap = response.files;
+      const texFiles = Object.entries(filesMap).filter(entry => entry[0].endsWith('.tex')).map(entry => entry[1]);
+      if (texFiles.length == 0) return;
+
+      const texFile = texFiles[0]
+      const content = texFile.content;
+
+      const target = document.querySelector('#output');
+
+      const metrics = MathJax.getMetricsFor(target, true);
+      const lines = content.split('\n\n');
+
+      lines.forEach(line => {
+
+        MathJax.tex2chtmlPromise(line, metrics).then(texElement => {
+          target.appendChild(texElement);
+
+          const sheet = document.querySelector('#MJX-CHTML-styles');
+          if (sheet) sheet.parentNode.removeChild(sheet);
+          document.head.appendChild(MathJax.chtmlStylesheet());
+        });
+
+      });
+
+    }).catch(([xhr, error]) => {
+      console.error('Error', xhr, error);
+    });
+  };
+</script>
+
+<p>
+  <a id="source" href=""></a>
+<p>
+  Updated at: <span id="updatedAt"></span>
+
+<div id="output"></div>
