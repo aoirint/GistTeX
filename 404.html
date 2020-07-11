@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
+<title>GistTeX</title>
 
 <style>
 #gistIdHeader { display: flex; margin: 1rem; }
@@ -105,6 +106,7 @@ MathJax = {
         document.head.appendChild(MathJax.chtmlStylesheet());
 
         document.querySelector('#contents').style.display = 'block';
+        document.title = response.description || 'GistTeX';
       });
 
     }).catch(([xhr, error]) => {
