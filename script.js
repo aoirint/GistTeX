@@ -36,8 +36,16 @@ function getGist(gistId) {
         return;
       }
 
+      const info = {
+        'ratelimit': {
+          'limit': xhr.getResponseHeader('X-Ratelimit-Limit'),
+          'remaining': xhr.getResponseHeader('X-Ratelimit-Remaining'),
+          'reset': xhr.getResponseHeader('X-Ratelimit-Reset'),
+        },
+      };
+
       const json = xhr.response;
-      resolve(json);
+      resolve([json, info]);
     };
     xhr.onerror = function(error) {
         reject([xhr, error]);

@@ -24,7 +24,19 @@ MathJax = {
     const gistId = hash2value();
     if (gistId == null) return;
 
-    getGist(gistId).then(response => {
+    getGist(gistId).then(([response, info]) => {
+      const tzOffsetSeconds = new Date().getTimezoneOffset() * 60000;
+
+      const ratelimitLimit = info.ratelimit.limit;
+      const ratelimitRemaining = info.ratelimit.remaining;
+      const ratelimitReset = new Date(parseInt(info.ratelimit.reset) * 1000 - tzOffsetSeconds).toISOString().slice(0, -1);
+      const ratelimitLimitSpan = document.querySelector('#ratelimitLimit');
+      const ratelimitRemainingSpan = document.querySelector('#ratelimitRemaining');
+      const ratelimitResetSpan = document.querySelector('#ratelimitReset');
+      ratelimitLimitSpan.innerText = ratelimitLimit;
+      ratelimitRemainingSpan.innerText = ratelimitRemaining;
+      ratelimitResetSpan.innerText = ratelimitReset;
+
       const htmlUrl = response.html_url;
       const ownerName = response.owner.login;
       const sourceAnchor = document.querySelector('#source');
@@ -34,10 +46,9 @@ MathJax = {
 
       const updatedAt = response.updated_at;
       const updatedAtDate = Date.parse(updatedAt);
-      const updatedAtTZOffsetSeconds = new Date().getTimezoneOffset() * 60000;
-      const updatedAtLocalDate = updatedAtDate - updatedAtTZOffsetSeconds;
+      const updatedAtLocalDate = updatedAtDate - tzOffsetSeconds;
       const updatedAtSpan = document.querySelector('#updatedAt');
-      updatedAtSpan.innerText = new Date(updatedAtLocalDate).toISOString();
+      updatedAtSpan.innerText = new Date(updatedAtLocalDate).toISOString().slice(0, -1);
 
 
       const filesMap = response.files;
@@ -69,6 +80,9 @@ MathJax = {
     });
   };
 </script>
+
+<p>
+Rate limit: <span id="ratelimitRemaining"></span>/<span id="ratelimitLimit"></span> (Reset at: <span id="ratelimitReset"></span>)
 
 <p>
   <a id="source" href=""></a>
