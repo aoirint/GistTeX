@@ -18,12 +18,23 @@
 function validateGistId(gistId) {
   return gistId.toLowerCase().match(/^[a-z0-9]{32}$/);
 }
-function path2gistId() {
+function path2gistInfo() {
   const path = location.pathname.substr(1);
   const userPath = path.split('/');
-  if (userPath.length > 2) return null;
 
-  return userPath[userPath.length-1];
+  let gistUser = null;
+  let gistId = null;
+
+  if (userPath.length == 1) gistId = userPath[0];
+  if (userPath.length == 2) {
+    gistUser = userPath[0];
+    gistId = userPath[1];
+  }
+
+  return {
+    'gistUser': gistUser,
+    'gistId': gistId,
+  };
 }
 function isRoot() {
   return location.pathname == '/';

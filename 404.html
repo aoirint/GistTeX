@@ -50,11 +50,14 @@ MathJax = {
       location.href = newPath;
     })
 
-    const gistId = path2gistId();
+    const {gistUser, gistId} = path2gistInfo();
     if (! validateGistId(gistId)) { redirectToRootIfNotRoot(); return; }
     gistIdInput.value = gistId;
 
     getGist(gistId).then(([response, info]) => {
+      const ownerId = response.owner.login;
+      if (gistUser != null && gistUser != ownerId) { redirectToRoot(); return; }
+
       const tzOffsetSeconds = new Date().getTimezoneOffset() * 60000;
 
       const ratelimitLimit = info.ratelimit.limit;
@@ -68,10 +71,9 @@ MathJax = {
       ratelimitResetSpan.innerText = ratelimitReset;
 
       const htmlUrl = response.html_url;
-      const ownerName = response.owner.login;
       const sourceAnchor = document.querySelector('#source');
       sourceAnchor.href = htmlUrl;
-      sourceAnchor.innerText = `${htmlUrl} by @${ownerName}`;
+      sourceAnchor.innerText = `${htmlUrl} by @${ownerId}`;
 
 
       const updatedAt = response.updated_at;
@@ -83,7 +85,7 @@ MathJax = {
 
       const filesMap = response.files;
       const texFiles = Object.entries(filesMap).filter(entry => entry[0].endsWith('.tex')).map(entry => entry[1]);
-      if (texFiles.length == 0) return;
+      if (texFiles.length == 0) { redirectToRoot(); return; }
 
       const texFile = texFiles[0];
       const content = texFile.content;
@@ -107,6 +109,7 @@ MathJax = {
 
     }).catch(([xhr, error]) => {
       console.error('Error', xhr, error);
+        redirectToRoot();
     });
   };
 </script>
