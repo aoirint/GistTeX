@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <title>GistTeX</title>
 
 <style>
@@ -106,7 +107,7 @@ MathJax = {
         document.head.appendChild(MathJax.chtmlStylesheet());
 
         document.querySelector('#contents').style.display = 'block';
-        document.title = response.description || 'GistTeX';
+        document.title = response.description || 'No title';
       });
 
     }).catch(([xhr, error]) => {
