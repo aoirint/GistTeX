@@ -30,6 +30,10 @@ MathJax = {
   window.onload = function() {
     const gistIdInput = document.querySelector('#gistIdInput');
     const goButton = document.querySelector('#goButton');
+
+    gistIdInput.addEventListener('keypress', e => {
+      if (e.keyCode == 13) goButton.click();
+    })
     goButton.addEventListener('click', e => {
       let gistIdValue = gistIdInput.value;
       if (gistIdValue.match(/^https?:\/\//)) {
@@ -39,6 +43,7 @@ MathJax = {
 
       if (! validateGistId(gistIdValue)) { redirectToRoot(); return; }
       location.href = `/${gistIdValue}`;
+      location.reload();
     })
 
     const gistId = path2gistId();
