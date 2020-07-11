@@ -42,8 +42,12 @@ MathJax = {
       }
 
       if (! validateGistId(gistIdValue)) { redirectToRoot(); return; }
-      location.href = `/${gistIdValue}`;
-      location.reload();
+      const newPath = `/${gistIdValue}`;
+      if (location.pathname == newPath) {
+        location.reload();
+        return;
+      }
+      location.href = newPath;
     })
 
     const gistId = path2gistId();
