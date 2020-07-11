@@ -24,7 +24,7 @@ MathJax = {
 };
 </script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.0.5/es5/tex-chtml.js" integrity="sha512-WIPUeuVusAT6dUtN6xKArYCBEa76ltyvaz3ltvQd+dy7ISdGJv1Y3y7eDBEF986YfNtmZGLdAaEBSgeBb+8OSg==" crossorigin="anonymous"></script>
-<script src="./script.js"></script>
+<script src="/script.js"></script>
 
 <script>
   window.onload = function() {
@@ -33,17 +33,16 @@ MathJax = {
     goButton.addEventListener('click', e => {
       let gistIdValue = gistIdInput.value;
       if (gistIdValue.match(/^https?:\/\//)) {
-        if (! gistIdValue.match(/^https:\/\/gist.github.com/)) return;
+        if (! gistIdValue.match(/^https:\/\/gist.github.com/)) { redirectToRoot(); return; }
         gistIdValue = gistIdValue.substr(gistIdValue.lastIndexOf('/')+1);
       }
 
-      if (gistIdValue.includes('/')) return;
-      location.hash = gistIdValue;
-      location.reload();
+      if (! validateGistId(gistIdValue)) { redirectToRoot(); return; }
+      location.href = `/${gistIdValue}`;
     })
 
-    const gistId = hash2value();
-    if (gistId == null) return;
+    const gistId = path2gistId();
+    if (! validateGistId(gistId)) { redirectToRootIfNotRoot(); return; }
     gistIdInput.value = gistId;
 
     getGist(gistId).then(([response, info]) => {

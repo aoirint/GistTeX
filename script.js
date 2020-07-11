@@ -9,12 +9,32 @@
 //
 //   return Object.fromEntries(entries);
 // }
+// function hash2value() {
+//   const hashString = location.hash;
+//   if (hashString.length == 0) return null;
+//
+//   return hashString.substr(1);
+// }
+function validateGistId(gistId) {
+  return gistId.toLowerCase().match(/^[a-z0-9]{32}$/);
+}
+function path2gistId() {
+  const path = location.pathname.substr(1);
+  const userPath = path.split('/');
+  if (userPath.length > 2) return null;
 
-function hash2value() {
-  const hashString = location.hash;
-  if (hashString.length == 0) return null;
-
-  return hashString.substr(1);
+  return userPath[userPath.length-1];
+}
+function isRoot() {
+  return location.pathname == '/';
+}
+function redirectToRoot() {
+  if (isRoot()) { location.reload(); return; }
+  location.href = '/';
+}
+function redirectToRootIfNotRoot() {
+  if (isRoot()) return;
+  location.href = '/';
 }
 
 function createGistUrl(gistId) {
