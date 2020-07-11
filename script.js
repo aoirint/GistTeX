@@ -16,7 +16,7 @@
 //   return hashString.substr(1);
 // }
 function validateGistId(gistId) {
-  return gistId.toLowerCase().match(/^[a-z0-9]{32}$/);
+  return gistId.toLowerCase().match(/^[a-z0-9]+$/);
 }
 function path2gistInfo() {
   const path = location.pathname.substr(1);
@@ -48,13 +48,13 @@ function redirectToRootIfNotRoot() {
   location.href = '/';
 }
 
-function createGistUrl(gistId) {
+function createGistApiUrl(gistId) {
   if (! gistId) return null;
   return `https://api.github.com/gists/${gistId}`;
 }
 function getGist(gistId) {
   return new Promise(function(resolve, reject) {
-    const url = createGistUrl(gistId);
+    const url = createGistApiUrl(gistId);
 
     const xhr = new XMLHttpRequest();
     xhr.responseType = 'json';
